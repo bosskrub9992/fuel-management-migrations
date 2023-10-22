@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/lmittmann/tint"
@@ -19,7 +18,7 @@ func New() *slog.Logger {
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.SourceKey {
 				source := a.Value.Any().(*slog.Source)
-				a.Value = slog.StringValue(fmt.Sprintf("%s:%d", filepath.Base(source.File), source.Line))
+				a.Value = slog.StringValue(fmt.Sprintf("%s:%d", source.File, source.Line))
 				return a
 			}
 			return a
