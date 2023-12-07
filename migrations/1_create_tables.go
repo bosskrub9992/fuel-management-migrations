@@ -22,7 +22,7 @@ func up1(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`CREATE TABLE IF NOT EXISTS fuel_usages (
 			id BIGSERIAL PRIMARY KEY,
-			fuel_use_date TIMESTAMP WITH TIME ZONE NOT NULL,
+			fuel_use_time TIMESTAMP WITH TIME ZONE NOT NULL,
 			fuel_price DECIMAL(10,3) NOT NULL,
 			kilometer_before_use INT NOT NULL,
 			kilometer_after_use INT NOT NULL,
