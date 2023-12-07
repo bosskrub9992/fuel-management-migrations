@@ -79,7 +79,7 @@ func down2(ctx context.Context, tx *gorm.DB) error {
 		DROP COLUMN update_by,
 		DROP COLUMN create_by;`,
 
-		`ALTER TABLE fuel_refills ADD COLUMN refill_by VARCHAR(50) NOT NULL;`,
+		`ALTER TABLE fuel_refills ADD COLUMN refill_by VARCHAR(50) NOT NULL DEFAULT 'SYSTEM';`,
 
 		`ALTER TABLE fuel_usages DROP COLUMN car_id;`,
 		`ALTER TABLE users DROP COLUMN default_car_id;`,
