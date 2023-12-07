@@ -5,10 +5,10 @@
 docker-compose up
 ```
 
-2. create 'test_database'
+2. create 'testdb'
 ```sh
-docker exec -i postgres psql -U postgres -c "drop database if exists test_database" && \
-docker exec -i postgres psql -U postgres -c "create database test_database"
+docker exec -i fuel-management-postgres psql -U postgres -c "drop database if exists testdb" && \
+docker exec -i fuel-management-postgres psql -U postgres -c "create database testdb"
 ```
 
 #### up commands
