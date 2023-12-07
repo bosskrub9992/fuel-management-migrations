@@ -3,5 +3,5 @@ database:
   port: "5432"
   username: "postgres"
   password: "postgres"
-  dbname: "testdb"
+  dbname: "fuel"
   sslmode: "disable"
