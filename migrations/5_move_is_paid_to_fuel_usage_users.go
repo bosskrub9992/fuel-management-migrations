@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"gorm.io/gorm"
@@ -33,18 +32,16 @@ func up5(ctx context.Context, tx *gorm.DB) error {
 }
 
 func verifyUp5(ctx context.Context, tx *gorm.DB) error {
-	stmt := `SELECT is_paid FROM fuel_usage_users LIMIT 1;`
-	if err := tx.WithContext(ctx).Exec(stmt).Error; err != nil {
-		slog.Error(err.Error())
-		return err
-	}
 	migrator := tx.Migrator()
-	if migrator.HasColumn("fuel_usages", "is_paid") {
-		err := fmt.Errorf("table [%s] still has field [%s]", "fuel_usages", "is_paid")
-		slog.Error(err.Error())
-		return err
+	validateColumnExistMap := map[string]map[ColumnType][]string{
+		"fuel_usage_users": {
+			ShouldHaveColumn: {"is_paid"},
+		},
+		"fuel_usages": {
+			ShouldNotHaveColumn: {"is_paid"},
+		},
 	}
-	return nil
+	return validateColumnExist(migrator, validateColumnExistMap)
 }
 
 func down5(ctx context.Context, tx *gorm.DB) error {
@@ -62,16 +59,14 @@ func down5(ctx context.Context, tx *gorm.DB) error {
 }
 
 func verifyDown5(ctx context.Context, tx *gorm.DB) error {
-	stmt := `SELECT is_paid FROM fuel_usages LIMIT 1;`
-	if err := tx.WithContext(ctx).Exec(stmt).Error; err != nil {
-		slog.Error(err.Error())
-		return err
-	}
 	migrator := tx.Migrator()
-	if migrator.HasColumn("fuel_usage_users", "is_paid") {
-		err := fmt.Errorf("table [%s] still has field [%s]", "fuel_usage_users", "is_paid")
-		slog.Error(err.Error())
-		return err
+	validateColumnExistMap := map[string]map[ColumnType][]string{
+		"fuel_usages": {
+			ShouldHaveColumn: {"is_paid"},
+		},
+		"fuel_usage_users": {
+			ShouldNotHaveColumn: {"is_paid"},
+		},
 	}
-	return nil
+	return validateColumnExist(migrator, validateColumnExistMap)
 }

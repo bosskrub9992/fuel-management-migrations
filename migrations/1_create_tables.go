@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"gorm.io/gorm"
@@ -64,19 +63,13 @@ func up1(ctx context.Context, tx *gorm.DB) error {
 }
 
 func verifyUp1(ctx context.Context, tx *gorm.DB) error {
-	sqlStatements := []string{
-		`SELECT * FROM fuel_usages LIMIT 1;`,
-		`SELECT * FROM users LIMIT 1;`,
-		`SELECT * FROM fuel_usage_users LIMIT 1;`,
-		`SELECT * FROM fuel_refills LIMIT 1;`,
-	}
-	for index, sqlStatement := range sqlStatements {
-		if err := tx.WithContext(ctx).Exec(sqlStatement).Error; err != nil {
-			slog.Error(err.Error(), "index", index)
-			return err
-		}
-	}
-	return nil
+	migrator := tx.Migrator()
+	return tableShouldExist(migrator,
+		"fuel_usages",
+		"users",
+		"fuel_usage_users",
+		"fuel_refills",
+	)
 }
 
 func down1(ctx context.Context, tx *gorm.DB) error {
@@ -96,19 +89,11 @@ func down1(ctx context.Context, tx *gorm.DB) error {
 }
 
 func verifyDown1(ctx context.Context, tx *gorm.DB) error {
-	tables := []string{
+	migrator := tx.Migrator()
+	return tableShouldNotExist(migrator,
 		"fuel_usages",
 		"users",
 		"fuel_usage_users",
 		"fuel_refills",
-	}
-	migrator := tx.Migrator()
-	for index, table := range tables {
-		if migrator.HasTable(table) {
-			err := fmt.Errorf("table [%s] is still exists", table)
-			slog.Error(err.Error(), "index", index)
-			return err
-		}
-	}
-	return nil
+	)
 }

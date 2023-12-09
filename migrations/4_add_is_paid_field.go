@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
 	"gorm.io/gorm"
@@ -33,17 +32,12 @@ func up4(ctx context.Context, tx *gorm.DB) error {
 }
 
 func verifyUp4(ctx context.Context, tx *gorm.DB) error {
-	sqlStatements := []string{
-		`SELECT is_paid FROM fuel_refills LIMIT 1;`,
-		`SELECT is_paid FROM fuel_usages LIMIT 1;`,
+	migrator := tx.Migrator()
+	tableToColumns := map[string][]string{
+		"fuel_refills": {"is_paid"},
+		"fuel_usages":  {"is_paid"},
 	}
-	for index, sqlStatement := range sqlStatements {
-		if err := tx.WithContext(ctx).Exec(sqlStatement).Error; err != nil {
-			slog.Error(err.Error(), "index", index)
-			return err
-		}
-	}
-	return nil
+	return tableShouldHaveColumns(migrator, tableToColumns)
 }
 
 func down4(ctx context.Context, tx *gorm.DB) error {
@@ -66,14 +60,5 @@ func verifyDown4(ctx context.Context, tx *gorm.DB) error {
 		"fuel_refills": {"is_paid"},
 		"fuel_usages":  {"is_paid"},
 	}
-	for table, columns := range tableToColumns {
-		for _, column := range columns {
-			if migrator.HasColumn(table, column) {
-				err := fmt.Errorf("table [%s] still has field [%s]", table, column)
-				slog.Error(err.Error())
-				return err
-			}
-		}
-	}
-	return nil
+	return tableShouldNotHaveColumns(migrator, tableToColumns)
 }
