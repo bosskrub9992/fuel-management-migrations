@@ -82,14 +82,15 @@ func main() {
 	}
 
 	var migratedCount int
-	err = db.Transaction(func(tx *gorm.DB) error {
-		for _, migration := range migrations.Migrations {
-			if !all && migratedCount == 1 {
-				break
-			}
-			if _, found := idToInDBMigration[migration.ID]; !found {
-				continue
-			}
+
+	for _, migration := range migrations.Migrations {
+		if !all && migratedCount == 1 {
+			break
+		}
+		if _, found := idToInDBMigration[migration.ID]; !found {
+			continue
+		}
+		err = db.Transaction(func(tx *gorm.DB) error {
 			if err := migration.Down(ctx, tx); err != nil {
 				slog.Error(err.Error())
 				return err
@@ -102,15 +103,15 @@ func main() {
 				slog.Error(err.Error())
 				return err
 			}
-			slog.Info(fmt.Sprintf("succesfully migrated id: [%d] down",
-				migration.ID,
-			))
-			migratedCount++
+			return nil
+		})
+		if err != nil {
+			return
 		}
-		return nil
-	})
-	if err != nil {
-		return
+		slog.Info(fmt.Sprintf("succesfully migrated id: [%d] down",
+			migration.ID,
+		))
+		migratedCount++
 	}
 
 	if migratedCount == 0 {
