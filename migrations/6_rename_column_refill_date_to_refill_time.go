@@ -32,15 +32,13 @@ func up6(ctx context.Context, tx *gorm.DB) error {
 
 func verifyUp6(ctx context.Context, tx *gorm.DB) error {
 	migrator := tx.Migrator()
-	if err := columnShouldExist(migrator, "fuel_refills", "refill_time"); err != nil {
-		slog.Error(err.Error())
-		return err
+	validateColumnExistMap := map[string]map[ColumnType][]string{
+		"fuel_refills": {
+			ShouldHaveColumn:    {"refill_time"},
+			ShouldNotHaveColumn: {"refill_date"},
+		},
 	}
-	if err := columnShouldNotExist(migrator, "fuel_refills", "refill_date"); err != nil {
-		slog.Error(err.Error())
-		return err
-	}
-	return nil
+	return validateColumnExist(migrator, validateColumnExistMap)
 }
 
 func down6(ctx context.Context, tx *gorm.DB) error {
@@ -58,13 +56,11 @@ func down6(ctx context.Context, tx *gorm.DB) error {
 
 func verifyDown6(ctx context.Context, tx *gorm.DB) error {
 	migrator := tx.Migrator()
-	if err := columnShouldExist(migrator, "fuel_refills", "refill_date"); err != nil {
-		slog.Error(err.Error())
-		return err
+	validateColumnExistMap := map[string]map[ColumnType][]string{
+		"fuel_refills": {
+			ShouldHaveColumn:    {"refill_date"},
+			ShouldNotHaveColumn: {"refill_time"},
+		},
 	}
-	if err := columnShouldNotExist(migrator, "fuel_refills", "refill_time"); err != nil {
-		slog.Error(err.Error())
-		return err
-	}
-	return nil
+	return validateColumnExist(migrator, validateColumnExistMap)
 }
