@@ -1,4 +1,4 @@
-package migrations
+package mgpostgres
 
 import (
 	"context"
@@ -9,17 +9,18 @@ import (
 
 func init() {
 	Migrations = append(Migrations, Migration{
-		ID:         6,
-		Up:         up6,
-		VerifyUp:   verifyUp6,
-		Down:       down6,
-		VerifyDown: verifyDown6,
+		ID:         5,
+		Up:         up5,
+		VerifyUp:   verifyUp5,
+		Down:       down5,
+		VerifyDown: verifyDown5,
 	})
 }
 
-func up6(ctx context.Context, tx *gorm.DB) error {
+func up5(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
-		`ALTER TABLE fuel_refills RENAME COLUMN refill_date TO refill_time;`,
+		`ALTER TABLE fuel_usages DROP COLUMN is_paid;`,
+		`ALTER TABLE fuel_usage_users ADD COLUMN is_paid BOOL;`,
 	}
 	for index, sqlStatement := range sqlStatements {
 		if err := tx.WithContext(ctx).Exec(sqlStatement).Error; err != nil {
@@ -30,20 +31,23 @@ func up6(ctx context.Context, tx *gorm.DB) error {
 	return nil
 }
 
-func verifyUp6(ctx context.Context, tx *gorm.DB) error {
+func verifyUp5(ctx context.Context, tx *gorm.DB) error {
 	migrator := tx.Migrator()
 	validateColumnExistMap := map[string]map[ColumnType][]string{
-		"fuel_refills": {
-			ShouldHaveColumn:    {"refill_time"},
-			ShouldNotHaveColumn: {"refill_date"},
+		"fuel_usage_users": {
+			ShouldHaveColumn: {"is_paid"},
+		},
+		"fuel_usages": {
+			ShouldNotHaveColumn: {"is_paid"},
 		},
 	}
 	return validateColumnExist(migrator, validateColumnExistMap)
 }
 
-func down6(ctx context.Context, tx *gorm.DB) error {
+func down5(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
-		`ALTER TABLE fuel_refills RENAME COLUMN refill_time TO refill_date;`,
+		`ALTER TABLE fuel_usages ADD COLUMN is_paid BOOL;`,
+		`ALTER TABLE fuel_usage_users DROP COLUMN is_paid;`,
 	}
 	for index, sqlStatement := range sqlStatements {
 		if err := tx.WithContext(ctx).Exec(sqlStatement).Error; err != nil {
@@ -54,12 +58,14 @@ func down6(ctx context.Context, tx *gorm.DB) error {
 	return nil
 }
 
-func verifyDown6(ctx context.Context, tx *gorm.DB) error {
+func verifyDown5(ctx context.Context, tx *gorm.DB) error {
 	migrator := tx.Migrator()
 	validateColumnExistMap := map[string]map[ColumnType][]string{
-		"fuel_refills": {
-			ShouldHaveColumn:    {"refill_date"},
-			ShouldNotHaveColumn: {"refill_time"},
+		"fuel_usages": {
+			ShouldHaveColumn: {"is_paid"},
+		},
+		"fuel_usage_users": {
+			ShouldNotHaveColumn: {"is_paid"},
 		},
 	}
 	return validateColumnExist(migrator, validateColumnExistMap)

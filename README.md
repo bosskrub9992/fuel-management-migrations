@@ -34,3 +34,10 @@ go run ./cmd/down
 ```sh
 go run ./cmd/down all
 ```
+
+#### useful commands
+
+```
+go install golang.org/x/vuln/cmd/govulncheck@latest
+~/go/bin/govulncheck ./...
+```

@@ -5,3 +5,4 @@ database:
   password: "postgres"
   dbname: "fuel"
   sslmode: "disable"
+  filePath: "../fuel-management-backend/test.db"
