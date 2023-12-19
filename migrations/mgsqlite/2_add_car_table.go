@@ -20,7 +20,7 @@ func init() {
 func up2(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`CREATE TABLE IF NOT EXISTS cars (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id INTEGER PRIMARY KEY,
 			name VARCHAR(500) NOT NULL,
 			create_time DATETIME NOT NULL,
 			update_time DATETIME NOT NULL

@@ -20,7 +20,7 @@ func init() {
 func up1(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`CREATE TABLE IF NOT EXISTS fuel_usages (
-			id BIGSERIAL PRIMARY KEY,
+			id INTEGER PRIMARY KEY,
 			fuel_use_time DATETIME NOT NULL,
 			fuel_price DECIMAL(10,3) NOT NULL,
 			kilometer_before_use INT NOT NULL,
@@ -31,18 +31,18 @@ func up1(ctx context.Context, tx *gorm.DB) error {
 			update_time DATETIME NOT NULL
 		);`,
 		`CREATE TABLE IF NOT EXISTS users (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id INTEGER PRIMARY KEY,
 			nickname VARCHAR(500) NOT NULL,
 			create_time DATETIME NOT NULL,
 			update_time DATETIME NOT null
 		);`,
 		`CREATE TABLE IF NOT EXISTS fuel_usage_users (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id INTEGER PRIMARY KEY,
 			fuel_usage_id BIGINT NOT NULL,
 			user_id BIGINT NOT NULL
 		);`,
 		`CREATE TABLE IF NOT EXISTS fuel_refills (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id INTEGER PRIMARY KEY,
 			refill_date DATETIME NOT NULL,
 			total_money DECIMAL(10,3) NOT NULL,
 			kilometer_before_refill INT NOT NULL,
