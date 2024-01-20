@@ -20,37 +20,37 @@ func init() {
 func up1(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`CREATE TABLE IF NOT EXISTS fuel_usages (
-			id BIGSERIAL PRIMARY KEY,
+			id SERIAL PRIMARY KEY NOT NULL,
 			fuel_use_time TIMESTAMP WITH TIME ZONE NOT NULL,
 			fuel_price DECIMAL(10,3) NOT NULL,
 			kilometer_before_use INT NOT NULL,
 			kilometer_after_use INT NOT NULL,
 			description VARCHAR(500),
 			total_money DECIMAL(10,3) NOT NULL,
-			create_time TIMESTAMP WITH TIME ZONE NOT NULL,
-			update_time TIMESTAMP WITH TIME ZONE NOT NULL
+			create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 		);`,
 		`CREATE TABLE IF NOT EXISTS users (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id SERIAL PRIMARY KEY NOT NULL,
 			nickname VARCHAR(500) NOT NULL,
-			create_time TIMESTAMP WITH TIME ZONE NOT NULL,
-			update_time TIMESTAMP WITH TIME ZONE NOT null
+			create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			update_time TIMESTAMP WITH TIME ZONE NOT null DEFAULT NOW()
 		);`,
 		`CREATE TABLE IF NOT EXISTS fuel_usage_users (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id SERIAL PRIMARY KEY NOT NULL,
 			fuel_usage_id BIGINT NOT NULL,
 			user_id BIGINT NOT NULL
 		);`,
 		`CREATE TABLE IF NOT EXISTS fuel_refills (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id SERIAL PRIMARY KEY NOT NULL,
 			refill_date TIMESTAMP WITH TIME ZONE NOT NULL,
 			total_money DECIMAL(10,3) NOT NULL,
 			kilometer_before_refill INT NOT NULL,
 			kilometer_after_refill INT NOT NULL,
 			fuel_price_calculated DECIMAL(10,3) NOT NULL,
 			refill_by VARCHAR(50) NOT NULL,
-			create_time TIMESTAMP WITH TIME ZONE NOT NULL,
-			update_time TIMESTAMP WITH TIME ZONE NOT NULL
+			create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 		);`,
 	}
 	for index, sqlStatement := range sqlStatements {

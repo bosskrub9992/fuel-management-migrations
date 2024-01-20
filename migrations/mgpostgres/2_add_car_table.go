@@ -20,16 +20,15 @@ func init() {
 func up2(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`CREATE TABLE IF NOT EXISTS cars (
-			id BIGSERIAL PRIMARY KEY NOT NULL,
+			id SERIAL PRIMARY KEY NOT NULL,
 			name VARCHAR(500) NOT NULL,
-			create_time TIMESTAMP WITH TIME ZONE NOT NULL,
-			update_time TIMESTAMP WITH TIME ZONE NOT NULL
+			create_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+			update_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 		);`,
 
-		`ALTER TABLE fuel_refills 
-		ADD COLUMN car_id BIGINT NOT NULL, 
-		ADD COLUMN update_by BIGINT NOT NULL,
-		ADD COLUMN create_by BIGINT NOT NULL;`,
+		`ALTER TABLE fuel_refills ADD COLUMN car_id BIGINT NOT NULL;`,
+		`ALTER TABLE fuel_refills ADD COLUMN update_by BIGINT NOT NULL;`,
+		`ALTER TABLE fuel_refills ADD COLUMN create_by BIGINT NOT NULL;`,
 
 		`ALTER TABLE fuel_refills DROP COLUMN refill_by;`,
 
@@ -70,10 +69,9 @@ func down2(ctx context.Context, tx *gorm.DB) error {
 	sqlStatements := []string{
 		`DROP TABLE IF EXISTS cars;`,
 
-		`ALTER TABLE fuel_refills 
-		DROP COLUMN car_id,
-		DROP COLUMN update_by,
-		DROP COLUMN create_by;`,
+		`ALTER TABLE fuel_refills DROP COLUMN car_id`,
+		`ALTER TABLE fuel_refills DROP COLUMN update_by;`,
+		`ALTER TABLE fuel_refills DROP COLUMN create_by;`,
 
 		`ALTER TABLE fuel_refills ADD COLUMN refill_by VARCHAR(50) NOT NULL DEFAULT 'SYSTEM';`,
 

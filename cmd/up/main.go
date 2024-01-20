@@ -10,7 +10,7 @@ import (
 
 	"github.com/bosskrub9992/fuel-management-migrations/config"
 	"github.com/bosskrub9992/fuel-management-migrations/domains"
-	"github.com/bosskrub9992/fuel-management-migrations/migrations/mgsqlite"
+	"github.com/bosskrub9992/fuel-management-migrations/migrations/mgpostgres"
 	"github.com/bosskrub9992/fuel-management-migrations/slogger"
 	"github.com/jinleejun-corp/corelib/databases"
 	"gorm.io/gorm"
@@ -29,12 +29,12 @@ func main() {
 	slog.SetDefault(slogger.New())
 
 	// sort ascending
-	sort.SliceStable(mgsqlite.Migrations, func(i, j int) bool {
-		return mgsqlite.Migrations[i].ID < mgsqlite.Migrations[j].ID
+	sort.SliceStable(mgpostgres.Migrations, func(i, j int) bool {
+		return mgpostgres.Migrations[i].ID < mgpostgres.Migrations[j].ID
 	})
 
-	idToMigration := make(map[uint]mgsqlite.Migration)
-	for _, migration := range mgsqlite.Migrations {
+	idToMigration := make(map[uint]mgpostgres.Migration)
+	for _, migration := range mgpostgres.Migrations {
 		if _, found := idToMigration[migration.ID]; found {
 			slog.Error(fmt.Sprintf("duplicate migration id: [%d]",
 				migration.ID,
@@ -44,7 +44,22 @@ func main() {
 		idToMigration[migration.ID] = migration
 	}
 
-	db, err := databases.NewGormDBSqlite(cfg.Database.FilePath)
+	postgresConfig := databases.PostgresConfig{
+		Host:     cfg.Database.Host,
+		Port:     cfg.Database.Port,
+		DBName:   cfg.Database.DBName,
+		Username: cfg.Database.Username,
+		Password: cfg.Database.Password,
+		SSLmode:  cfg.Database.SSLmode,
+	}
+
+	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+
+	db, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
 		slog.Error(err.Error())
 		return
@@ -74,7 +89,7 @@ func main() {
 
 	var migratedCount int
 
-	for _, migration := range mgsqlite.Migrations {
+	for _, migration := range mgpostgres.Migrations {
 		if !all && migratedCount == 1 {
 			break
 		}
