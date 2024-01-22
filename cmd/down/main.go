@@ -53,7 +53,7 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	db, err := databases.NewGormDBPostgres(sqlDB)
+	db, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
 		slog.Error(err.Error())
 		return
