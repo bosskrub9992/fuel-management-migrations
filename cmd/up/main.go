@@ -44,21 +44,16 @@ func main() {
 		idToMigration[migration.ID] = migration
 	}
 
-	postgresConfig := databases.PostgresConfig{
-		Host:     cfg.Database.Host,
-		Port:     cfg.Database.Port,
-		DBName:   cfg.Database.DBName,
-		Username: cfg.Database.Username,
-		Password: cfg.Database.Password,
-		SSLmode:  cfg.Database.SSLmode,
-	}
-
-	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
-
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			slog.Error(err.Error())
+		}
+	}()
 	db, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
 		slog.Error(err.Error())

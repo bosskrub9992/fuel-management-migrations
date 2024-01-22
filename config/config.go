@@ -3,19 +3,17 @@ package config
 import (
 	"strings"
 
+	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	Database struct {
-		Host     string
-		Port     string
-		DBName   string
-		Username string
-		Password string
-		SSLmode  string
-		FilePath string
+		Postgres databases.PostgresConfig
+		SQLite   struct {
+			FilePath string
+		}
 	}
 	Logger slogger.Config
 }

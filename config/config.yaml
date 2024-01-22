@@ -1,8 +1,10 @@
 database:
-  host: "localhost"
-  port: "5432"
-  username: "postgres"
-  password: "postgres"
-  dbname: "fuel"
-  sslmode: "disable"
-  filePath: "../fuel-management-backend/test.db"
+  postgres:
+    host: "localhost"
+    port: "5432"
+    username: "postgres"
+    password: "postgres"
+    dbname: "fuel"
+    sslmode: "disable"
+  sqlite:
+    filePath: "../fuel-management-backend/test.db"
