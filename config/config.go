@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	Database struct {
+		Use      string
 		Postgres databases.PostgresConfig
 		SQLite   struct {
 			FilePath string

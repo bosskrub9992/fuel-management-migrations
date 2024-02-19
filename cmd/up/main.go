@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/bosskrub9992/fuel-management-migrations/config"
@@ -44,19 +45,34 @@ func main() {
 		idToMigration[migration.ID] = migration
 	}
 
-	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-	defer func() {
-		if err := sqlDB.Close(); err != nil {
+	var db *gorm.DB
+	var err error
+
+	switch strings.ToLower(cfg.Database.Use) {
+	case "postgres":
+		sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
+		if err != nil {
 			slog.Error(err.Error())
+			return
 		}
-	}()
-	db, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
-	if err != nil {
-		slog.Error(err.Error())
+		defer func() {
+			if err := sqlDB.Close(); err != nil {
+				slog.Error(err.Error())
+			}
+		}()
+		db, err = databases.NewGormDBPostgres(sqlDB, gorm.Config{})
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+	case "sqlite":
+		db, err = databases.NewGormDBSqlite(cfg.Database.SQLite.FilePath, gorm.Config{})
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+	default:
+		slog.Error("invalid database type")
 		return
 	}
 
@@ -113,7 +129,7 @@ func main() {
 		if err != nil {
 			return
 		}
-		slog.Info(fmt.Sprintf("succesfully migrated id: [%d] up", migration.ID))
+		slog.Info(fmt.Sprintf("successfully migrated id: [%d] up", migration.ID))
 		migratedCount++
 	}
 
